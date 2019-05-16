@@ -104,7 +104,35 @@ def ex_14_17():
     [('A', 0), ('B', 1), ('C', 2), ('?', 3), ('?', 4)]
     """
 
+#Example 14-18. itertools product generator function examples
+def ex_14_18():
+    import itertools
+    a = list(itertools.product('ABC', range(2))) 
+    print(a)
+
+    suits = 'spades hearts diamonds clubs'.split()
+    b = list(itertools.product('AK', suits))
+    print(b)
+
+    c = list(itertools.product('ABC'))
+    print(c)
+
+    d = list(itertools.product('ABC', repeat=2))
+    print(d)
+
+    e = list(itertools.product(range(2), repeat=3))
+    print(e)
+
+    rows = itertools.product('AB', range(2), repeat=2)
+    for row in rows: print(row)
+
+
+    """
+    
+    """
+
 
 if __name__ == "__main__":
     #ex_14_16()
-    ex_14_17()
+    #ex_14_17()
+    ex_14_18()
