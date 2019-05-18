@@ -127,12 +127,140 @@ def ex_14_18():
     for row in rows: print(row)
 
 
-    """
+    """ 
+    笛卡尔乘积个概念：
+    1） For example, product(A, B) returns the same as ((x,y) for x in A for y in B).
+    这个后续还要在理解理解
+    2） def product(*args, repeat=1):
+            # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
+            # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+            pools = [tuple(pool) for pool in args] * repeat
+            result = [[]]
+            for pool in pools:
+                result = [x+[y] for x in result for y in pool]  
+            for prod in result:
+                yield tuple(prod)
+
+    Results:
+    笛卡尔乘积： 3个字符的字符串和一个两个元素的数组，结果一共3*2=6个元素
+    [('A', 0), ('A', 1), ('B', 0), ('B', 1), ('C', 0), ('C', 1)]
+
+
+    [('A', 'spades'), ('A', 'hearts'), ('A', 'diamonds'), ('A', 'clubs'), ('K', 'spades'), ('K', 'hearts'), ('K', 'diamonds'), ('K', 'clubs')]
     
+    单个iterable入参，不是很有用
+    [('A',), ('B',), ('C',)]
+
+    repeat表示重复消耗product的另外的入参的次数
+    [('A', 'A'), ('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'B'), ('B', 'C'), ('C', 'A'), ('C', 'B'), ('C', 'C')]
+    [(0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)]
+    ('A', 0, 'A', 0)
+    ('A', 0, 'A', 1)
+    ('A', 0, 'B', 0)
+    ('A', 0, 'B', 1)
+    ('A', 1, 'A', 0)
+    ('A', 1, 'A', 1)
+    ('A', 1, 'B', 0)
+    ('A', 1, 'B', 1)
+    ('B', 0, 'A', 0)
+    ('B', 0, 'A', 1)
+    ('B', 0, 'B', 0)
+    ('B', 0, 'B', 1)
+    ('B', 1, 'A', 0)
+    ('B', 1, 'A', 1)
+    ('B', 1, 'B', 0)
+    ('B', 1, 'B', 1)
     """
 
+#Example 14-19. count, cycle, and repeat
+def ex_14_19():
+    import itertools
+    ct = itertools.count()
+    a = next(ct)
+    print(a)
+
+    b = next(ct), next(ct), next(ct)
+    print(b)
+
+    c = list(itertools.islice(itertools.count(1, .3), 3))
+    print(c)
+
+    cy = itertools.cycle('ABC')
+    d = next(cy)
+    print(d)
+
+    e = list(itertools.islice(cy, 7))
+    print(e)
+
+    rp = itertools.repeat(7)
+    f = next(rp)
+    print(f)
+    g = next(rp)
+    print(g)
+
+    h = list(itertools.repeat(8, 4))
+    print(h)
+
+    import operator
+    i = list(map(operator.mul, range(11), itertools.repeat(5)))
+    print(i)
+
+    """
+    Results:
+    count generator 没有个数限制，不能用List来进行转换
+    0
+    (1, 2, 3)
+
+    count generator可以通过isslice or takewhile来限制个数
+    [1, 1.3, 1.6]
+    
+    cycle generator产生循环的items
+    A
+    ['B', 'C', 'A', 'B', 'C', 'A', 'B']
+
+    cycle generator可以用第二个入参time来限制yield个数
+    7
+    7
+
+    repeat generator产生重复的items，可以通过第二个入参time来限制重复个数
+    [8, 8, 8, 8]
+    [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    """
+
+#Example 14-20. Combinatoric generator functions yield multiple values per input item
+def ex_14_20():
+    import itertools
+    a = list(itertools.combinations('ABC', 2))
+    print(a)
+
+    b = list(itertools.combinations_with_replacement('ABC', 2))
+    print(b)
+
+    c = list(itertools.permutations('ABC', 2))
+    print(c)
+
+    d = list(itertools.product('ABC', repeat=2))
+    print(d)
+
+    """
+    Results:
+    长度为2的‘ABC’的组合：
+    [('A', 'B'), ('A', 'C'), ('B', 'C')]
+
+    长度为2，允许单个item重复的‘ABC’的组合
+    [('A', 'A'), ('A', 'B'), ('A', 'C'), ('B', 'B'), ('B', 'C'), ('C', 'C')]
+
+    长度为2，‘ABC’的排列组合
+    [('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'C'), ('C', 'A'), ('C', 'B')]
+
+    笛卡尔乘积
+    [('A', 'A'), ('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'B'), ('B', 'C'), ('C', 'A'), ('C', 'B'), ('C', 'C')]
+    
+    """
 
 if __name__ == "__main__":
     #ex_14_16()
     #ex_14_17()
-    ex_14_18()
+    #ex_14_18()
+    #ex_14_19()
+    ex_14_20()
