@@ -38,26 +38,28 @@ def inorder(t):
         for x in inorder(t.right):
             yield x
 
+
+# A non-recursive generator效果和inorder一致
+def inorder2(node):
+    stack2 = []
+    while node:
+        while node.left:
+            stack2.append(node)
+            node = node.left
+
+        yield node.label
+        while not node.right:
+            try:
+                node = stack2.pop()
+            except IndexError: 
+                return
+            yield node.label
+        node = node.right
+
+
 # Show it off: create a tree
 t = tree("ABCDEFGHIJKLMN0OPQRSTUVMXYZ")
 #Print the nodes of the tree in-order
 for x in t:
     print (x)
 
-
-# A non-recursive generator效果和inorder一致
-def inorder2(node):
-    stack = []
-    while node:
-        while node.left:
-            stack.append(node)
-            node = node.left
-
-        yield node.label
-        while not node.right:
-            try:
-                node = stack.pop()
-            except IndexError:
-                return
-            yield node.label
-        node = node.right
