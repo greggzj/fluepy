@@ -23,7 +23,7 @@ print(monster)
 Results:
     <mirror.LookingGlass object at 0x7f83a6dfff98>
     eurT
-    YKCOWREBBAJ
+    YKCOWREBBAJ 
     >89fffd6a38f7x0 ta tcejbo ssalGgnikooL.rorrim<
     JABBERWOCKY
 """
