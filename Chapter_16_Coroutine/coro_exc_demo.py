@@ -68,7 +68,7 @@ def ex_16_11():
     next(exc_coro)
 
     exc_coro.send(11)
-
+                                           
     exc_coro.throw(ZeroDivisionError)
 
     print(getgeneratorstate(exc_coro))
