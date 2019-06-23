@@ -78,7 +78,7 @@ else:
             _s = yield _y
         # 处理 close delegating generator 和 subgenerator。
         # 需要注意，由于subgenerator可以是任意的Iterator，所以可能不包含可调用的close()方法
-        # 如果是这种情况，那么久抛出AttributeError 
+        # 如果是这种情况，那么就抛出AttributeError 
         except GeneratorExit as _e:
             try:
                 _m = _i.close
@@ -87,7 +87,8 @@ else:
             else:
                 _m()
             raise _e
-        # 使用throw()方法处理caller抛出的exceptions。
+        # 处理caller抛出的exceptions
+        # 会调用subgenerator的throw()方法
         # 注意，subgenerator可以是一个iterator，不包含可调用的throw()方法，这种情况下
         # AttributeError就会被抛出
         except BaseException as _e:
@@ -104,6 +105,8 @@ else:
             
             # 如果subgenerator 包含可调用的throw 方法，那么就会被调用，并且入参就是caller传递过来的
             # exception。
+            # sugenerator 可能会处理exception（这里的else分支）（并且会继续loop循环）；
+            # subgenerator 
             else:
                 try:
                     _y = _m(*_x)
