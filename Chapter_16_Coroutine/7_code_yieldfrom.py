@@ -76,7 +76,7 @@ else:
         try:
             #同上
             _s = yield _y
-        # 处理 close delegating generator 和 subgenerator。
+        # 处理 caller close delegating generator 和 subgenerator。
         # 需要注意，由于subgenerator可以是任意的Iterator，所以可能不包含可调用的close()方法
         # 如果是这种情况，那么就抛出AttributeError 
         except GeneratorExit as _e:
@@ -97,37 +97,32 @@ else:
                 _m = _i.throw
             except AttributeError:
                 raise _e
-            #If the subgenerator has a throw method, call it with the exception passed from
-            #the caller. The subgenerator may handle the exception (and the loop continues);
-            #it may raise StopIteration (the _r result is extracted from it, and the loop ends);
-            #or it may raise the same or another exception, which is not handled here and
-            #propagates to the delegating generator.
-            
             # 如果subgenerator 包含可调用的throw 方法，那么就会被调用，并且入参就是caller传递过来的
             # exception。
-            # sugenerator 可能会处理exception（这里的else分支）（并且会继续loop循环）；
-            # subgenerator 
+            # subgenerator 可能会处理exception（这里的else分支）（并且会继续loop循环）；
+            # subgenerator 可能会在处理exception过程中raise StopIteration，如果是这种情况，那么_r的值就是exception的value，同时循环终止
+            # subgenerator 可能会在处理exception过程中raise 相同的或者其他的exception，对于这种情况，这里不做处理，直接将exception传递到delegating generator
             else:
                 try:
                     _y = _m(*_x)
                 except StopIteration as _e:
                     _r = _e.value
                     break
-        #If no exception was received when yielding…
+        # 如果yield时没有任何exception发生
         else:
-            #Try to advance the subgenerator…
+            # 尝试advance subgenerator
             try:
-                #Call next on the subgenerator if the last value received from the caller was None,
-                #otherwise call send.
+                # 如果当前caller send的值为None，那么就对subgenerator调用next方法
+                # 否则调用send 把caller send过来的value透传给subgenerator
                 if _s is None:
                     _y = next(_i)
                 else:
                     _y = _i.send(_s)
-            #If the subgenerator raised StopIteration, get the value, assign to _r, and exit
-            #the loop, resuming the delegating generator.
+            # 如果subgenerator raise StopIteration，那么就获取exception的value到_r并退出循环
+            # 同时resume delegating generator
             except StopIteration as _e:
                 _r = _e.value
                 break
 
-#_r is the RESULT: the value of the whole yield from expression.
+#_同上
 RESULT = _r
