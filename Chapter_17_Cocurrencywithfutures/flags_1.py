@@ -10,13 +10,17 @@ POP20_CC = ('CN IN US ID BR PK NG BD RU JP '
             'MX PH VN ET EG DE IR TR CD FR').split()
 
 #
-BASE_URL = 'http://flupy.org/data/flags'
+BASE_URL = 'http://localhost:8001/flags'
 
 #
 DEST_DIR = 'downloads/'
 
+
 # 存储img(byte sequence)到Filename
 def save_flag(img, filename):
+    if not os.path.exists(DEST_DIR):
+        os.makedirs(DEST_DIR)
+
     path = os.path.join(DEST_DIR, filename)
     with open(path, 'wb') as fp:
         fp.write(img)
