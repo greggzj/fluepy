@@ -150,7 +150,10 @@ def main(download_many, default_concur_req, max_concur_req):
 
 
 '''
-Output for python3 flags2_threadpool.py -h
+A) help会输出的消息：
+
+    python3 XXX(如：flags2_threadpool.py) -h
+
     usage: flags2_sequential_6.py [-h] [-a] [-e] [-l N] [-m CONCURRENT] [-s LABEL]
                                 [-v]
                                 [CC [CC ...]]
@@ -172,37 +175,60 @@ Output for python3 flags2_threadpool.py -h
                             (default=LOCAL)
     -v, --verbose         output detailed progress info
 
+B) 对于-s的LABEL，目前可以输入以下几个，默认是LOCAL，本地服务器中对于DELAY/ERROR的端口
+    没有涉及配置，后续有兴趣可继续
+        LOCAL
+        Use http://localhost:8001/flags; this is the default. You should configure a
+        local HTTP server to answer at port 8001. I used Nginx for my tests. The README.
+        rst file for this chapter’s example code explains how to install and configure
+        it.
+        REMOTE
+        Use http://flupy.org/data/flags; that is a public website owned by me, hosted
+        on a shared server. Please do not pound it with too many concurrent requests. The
+        flupy.org domain is handled by a free account on the Cloudflare CDN so you may
+        notice that the first downloads are slower, but they get faster when the CDN cache
+        warms up.6
+        DELAY
+        Use http://localhost:8002/flags; a proxy delaying HTTP responses should be
+        listening at port 8002. I used a Mozilla Vaurien in front of my local Nginx to introduce
+        delays. The previously mentioned README.rst file has instructions for running
+        a Vaurien proxy.
 
 
-    All arguments are optional. The most important arguments are discussed next.
-One option you can’t ignore is -s/--server: it lets you choose which HTTP server and
-base URL will be used in the test. You can pass one of four strings to determine where
-the script will look for the flags (the strings are case insensitive):
-LOCAL
-Use http://localhost:8001/flags; this is the default. You should configure a
-local HTTP server to answer at port 8001. I used Nginx for my tests. The README.
-rst file for this chapter’s example code explains how to install and configure
-it.
-REMOTE
-Use http://flupy.org/data/flags; that is a public website owned by me, hosted
-on a shared server. Please do not pound it with too many concurrent requests. The
-flupy.org domain is handled by a free account on the Cloudflare CDN so you may
-notice that the first downloads are slower, but they get faster when the CDN cache
-warms up.6
-DELAY
-Use http://localhost:8002/flags; a proxy delaying HTTP responses should be
-listening at port 8002. I used a Mozilla Vaurien in front of my local Nginx to introduce
-delays. The previously mentioned README.rst file has instructions for running
-a Vaurien proxy.
+        ERROR
+        Use http://localhost:8003/flags; a proxy introducing HTTP errors and delaying
+        responses should be installed at port 8003. I used a different Vaurien configuration
+        for this.
 
 
-ERROR
-Use http://localhost:8003/flags; a proxy introducing HTTP errors and delaying
-responses should be installed at port 8003. I used a different Vaurien configuration
-for this.
+C) 不添加任何参数运行python3 XXX.py(flags2_sequential.py),会从默认LOCAL site下载
 
-By default, each flags2 script will fetch the flags of the 20 most populous countries
-from the LOCAL server (http://localhost:8001/flags) using a default number of
-concurrent connections, which varies from script to script. Example 17-9 shows a sample
-run of the flags2_sequential.py script using all defaults.
+    $ python3 flags2_sequential.py
+    LOCAL site: http://localhost:8001/flags
+    Searching for 20 flags: from BD to VN
+    1 concurrent connection will be used.
+    --------------------
+    20 flags downloaded.
+    Elapsed time: 0.10s
+
+D) 指定从DELAY服务器下载某几个flag
+    $ python3 flags2_threadpool.py -s DELAY a b c
+    DELAY site: http://localhost:8002/flags
+    Searching for 78 flags: from AA to CZ
+    30 concurrent connections will be used.
+    --------------------
+    43 flags downloaded.
+    35 not found.
+    Elapsed time: 1.72s
+
+
+E) 通过-a下载所有flag, 通过-l限定下载的个数
+    $ python3 flags2_asyncio.py -s ERROR -al 100 -m 100
+    ERROR site: http://localhost:8003/flags
+    Searching for 100 flags: from AD to LK
+    100 concurrent connections will be used.
+    --------------------
+    73 flags downloaded.
+    27 errors.
+    Elapsed time: 0.64s
 '''
