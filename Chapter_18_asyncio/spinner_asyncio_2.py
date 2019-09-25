@@ -2,33 +2,6 @@ import asyncio
 import itertools
 import sys
 
-'''
-The yield from asyncio.sleep(3) expression handles the control flow to the
-main loop, which will resume this coroutine after the sleep delay.
-
-supervisor is now a coroutine as well, so it can drive slow_function with yield
-from.
-
-asyncio.async(…) schedules the spin coroutine to run, wrapping it in a Task
-object, which is returned immediately.
-
-Display the Task object. The output looks like <Task pending coro=<spin()
-running at spinner_asyncio.py:12>>.
-
-Drive the slow_function(). When that is done, get the returned value.
-Meanwhile, the event loop will continue running because slow_function
-ultimately uses yield from asyncio.sleep(3) to hand control back to the main
-loop.
-
-A Task object can be cancelled; this raises asyncio.CancelledError at the yield
-line where the coroutine is currently suspended. The coroutine may catch the
-exception and delay or even refuse to cancel.
-
-Get a reference to the event loop.
-
-Drive the supervisor coroutine to completion; the return value of the coroutine
-is the return value of this call.
-'''
 
 '''
 Coroutines intended for use with asyncio should be decorated with @asyn
@@ -59,22 +32,56 @@ def slow_function():
     proceed while this coroutine pretends to do I/O by sleeping.
     '''
     # pretend waiting a long time for I/O
+    # The yield from asyncio.sleep(3) expression handles the control flow to the
+    # main loop, which will resume this coroutine after the sleep delay.
+    # 
     yield from asyncio.sleep(3) # 6
     return 42
 
 @asyncio.coroutine
-def supervisor():   # 7
+def supervisor():   # 7 supervisor is now a coroutine as well, so it can drive slow_function with yield from.
+
+    '''
+    asyncio.async(…) schedules the spin coroutine to run, wrapping it in a Task
+    object, which is returned immediately.
+    '''
     spinner = asyncio.async(spin('thinking!'))  # 8
-    print('spinner object:', spinner)   # 9
+    # 9 打印Task object, 输出的消息类似: Task pending coro=<spin() running at spinner_asyncio.py:12
+    print('spinner object:', spinner) 
+
+    '''
+    Drive the slow_function(). When that is done, get the returned value.
+    Meanwhile, the event loop will continue running because slow_function
+    ultimately uses yield from asyncio.sleep(3) to hand control back to the main
+    loop.
+    '''
     result = yield from slow_function() # 10
+
+    '''
+    A Task object can be cancelled; this raises asyncio.CancelledError at the yield
+    line where the coroutine is currently suspended. The coroutine may catch the
+    exception and delay or even refuse to cancel.
+    '''
     spinner.cancel()    # 11
     return result
 
 def main():
-    loop = asyncio.get_event_loop() # 12
-    result = loop.run_until_complete(supervisor())  # 13
+    # 12 Get a reference to the event loop.
+    loop = asyncio.get_event_loop()
+    '''
+    Drive the supervisor coroutine to completion; the return value of the coroutine
+    is the return value of this call.
+    '''
+    result = loop.run_until_complete(supervisor())
     loop.close()
     print('Answer:', result)
 
 if __name__ == '__main__':
     main()
+
+
+
+'''
+永远不要在asyncio coroutines里面使用time.sleep(...)，除非你想阻塞main thread，freezing event loop和whole application。
+如果一定要用sleep, 使用yield from asyncio.sleep(DELAY)
+'''
