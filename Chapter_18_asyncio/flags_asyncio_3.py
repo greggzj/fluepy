@@ -30,3 +30,17 @@ def download_many(cc_list):
 
 if __name__ == "__main__":
     main(download_many)
+
+
+
+"""
+@asyncio.coroutine 号称If the coroutine is not yielded from before it is destroyed,
+    an error message is logged.
+但从代码看，只有在打开_DEBUG开关情况下才会将被修饰函数包装为CoWrapper，在del时才会有error msg，
+如果该开关不打开似乎就是一个正常的coroutine函数，仅作为标记使用。
+
+author在总结@asyncio.coroutine好处时没有强调_DEBUG开关，不知道是不是之前python版本所致。
+
+
+
+"""
