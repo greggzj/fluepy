@@ -29,6 +29,8 @@ def download_many(cc_list):
     return len(res)
 
 if __name__ == "__main__":
+    import pdb
+    pdb.set_trace()
     main(download_many)
 
 

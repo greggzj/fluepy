@@ -1,0 +1,4 @@
+requests==2.21.0
+aiohttp==0.13.1
+
+
